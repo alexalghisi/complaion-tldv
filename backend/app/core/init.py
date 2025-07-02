@@ -1,0 +1,3 @@
+"""
+Configurazione core dell'applicazione
+"""
