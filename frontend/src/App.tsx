@@ -1,51 +1,30 @@
 import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { Toaster } from 'react-hot-toast';
-import AppRoutes from './routes/AppRoutes';
-
-// Configurazione React Query
-    const queryClient = new QueryClient({
-    defaultOptions: {
-        queries: {
-            retry: 1,
-            refetchOnWindowFocus: false,
-            staleTime: 5 * 60 * 1000, // 5 minuti
-        },
-    },
-});
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ProcessProvider } from './contexts/ProcessContext';
+import { ToastProvider } from './contexts/ToastContext';
+import Layout from './components/Layout/Layout';
+import Dashboard from './pages/Dashboard/Dashboard';
+import Meetings from './pages/Meetings/Meetings';
+import ProcessMonitor from './pages/ProcessMonitor/ProcessMonitor';
+import './App.css';
 
 function App() {
     return (
-        <QueryClientProvider client={queryClient}>
-            <Router>
-                <div className="min-h-screen bg-gray-50">
-                    <AppRoutes />
-                    <Toaster
-                        position="top-right"
-                        toastOptions={{
-                            duration: 4000,
-                            style: {
-                                background: '#363636',
-                                color: '#fff',
-                            },
-                            success: {
-                                iconTheme: {
-                                    primary: '#4ade80',
-                                    secondary: '#fff',
-                                },
-                            },
-                            error: {
-                                iconTheme: {
-                                    primary: '#f87171',
-                                    secondary: '#fff',
-                                },
-                            },
-                        }}
-                    />
-                </div>
-            </Router>
-        </QueryClientProvider>
+        <ToastProvider>
+            <ProcessProvider>
+                <Router>
+                    <div className="App">
+                        <Layout>
+                            <Routes>
+                                <Route path="/" element={<Dashboard />} />
+                                <Route path="/meetings" element={<Meetings />} />
+                                <Route path="/processes" element={<ProcessMonitor />} />
+                            </Routes>
+                        </Layout>
+                    </div>
+                </Router>
+            </ProcessProvider>
+        </ToastProvider>
     );
 }
 

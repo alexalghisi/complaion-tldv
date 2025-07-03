@@ -1,55 +1,22 @@
 {
   "name": "tldv-integration-frontend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
-  "description": "Frontend React per l'integrazione tl;dv - Complaion",
-  "author": "Alessandro Alghisi <alexalghisi@gmail.com>",
   "dependencies": {
-    "@types/node": "^20.9.0",
-    "@types/react": "^18.2.37",
-    "@types/react-dom": "^18.2.15",
-    "@types/react-table": "^7.7.18",
-    "axios": "^1.6.0",
-    "date-fns": "^2.30.0",
-    "firebase": "^10.7.0",
-    "lucide-react": "^0.294.0",
+    "@heroicons/react": "^2.0.16",
+    "build": "^0.1.4",
+    "npm": "^11.4.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hot-toast": "^2.4.1",
-    "react-player": "^2.13.0",
-    "react-query": "^3.39.3",
-    "react-router-dom": "^6.18.0",
+    "react-router-dom": "^6.8.0",
     "react-scripts": "5.0.1",
-    "react-table": "^7.8.0",
-    "tailwindcss": "^3.3.5",
-    "typescript": "^4.9.5"
-  },
-  "devDependencies": {
-    "@testing-library/jest-dom": "^6.1.4",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^14.5.1",
-    "@typescript-eslint/eslint-plugin": "^6.12.0",
-    "@typescript-eslint/parser": "^6.12.0",
-    "autoprefixer": "^10.4.16",
-    "cypress": "^13.6.0",
-    "eslint": "^8.54.0",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "postcss": "^8.4.31",
-    "prettier": "^3.1.0"
+    "start": "^5.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "test:coverage": "react-scripts test --coverage --watchAll=false",
-    "test:e2e": "cypress run",
-    "test:e2e:open": "cypress open",
-    "eject": "react-scripts eject",
-    "lint": "eslint src --ext .ts,.tsx",
-    "lint:fix": "eslint src --ext .ts,.tsx --fix",
-    "format": "prettier --write src/**/*.{ts,tsx,css,md}",
-    "type-check": "tsc --noEmit"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
@@ -68,5 +35,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "proxy": "http://localhost:8000",
+  "devDependencies": {
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6"
   }
 }
