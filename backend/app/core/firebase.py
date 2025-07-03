@@ -2,8 +2,6 @@
 Configurazione Firebase
 """
 
-import json
-from typing import Dict, Any
 import firebase_admin
 from firebase_admin import credentials, firestore, storage
 from .config import settings
@@ -29,23 +27,14 @@ class FirebaseService:
     def _initialize_firebase(self):
         """Inizializza Firebase Admin SDK"""
         try:
-            # Crea le credenziali dal service account
-            cred_dict = {
-                "type": "service_account",
-                "project_id": settings.firebase_project_id,
-                "private_key": settings.firebase_private_key.replace('\\n', '\n'),
-                "client_email": settings.firebase_client_email,
-            }
+            # Usa il file JSON completo delle credenziali
+            cred = credentials.Certificate(settings.firebase_credentials_file)
 
-            cred = credentials.Certificate(cred_dict)
-
-            # Inizializza l'app se non già fatto
             if not firebase_admin._apps:
                 firebase_admin.initialize_app(cred, {
-                    'storageBucket': f"{settings.firebase_project_id}.appspot.com"
+                    'storageBucket': f"{settings.storage_bucket}"
                 })
 
-            # Inizializza i servizi
             self._db = firestore.client()
             self._bucket = storage.bucket()
 
