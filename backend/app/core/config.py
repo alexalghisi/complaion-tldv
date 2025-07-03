@@ -27,9 +27,7 @@ class Settings(BaseSettings):
     tldv_timeout: int = Field(30, env="TLDV_TIMEOUT")
 
     # Firebase
-    firebase_project_id: str = Field(..., env="FIREBASE_PROJECT_ID")
-    firebase_private_key: str = Field(..., env="FIREBASE_PRIVATE_KEY")
-    firebase_client_email: str = Field(..., env="FIREBASE_CLIENT_EMAIL")
+    firebase_credentials_file: str = Field(..., env="FIREBASE_CREDENTIALS_FILE")
 
     # Redis
     redis_url: str = Field("redis://localhost:6379", env="REDIS_URL")
