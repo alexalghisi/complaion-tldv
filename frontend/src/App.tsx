@@ -5,7 +5,7 @@ import { Toaster } from 'react-hot-toast';
 import AppRoutes from './routes/AppRoutes';
 
 // Configurazione React Query
-const queryClient = new QueryClient({
+    const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
             retry: 1,
