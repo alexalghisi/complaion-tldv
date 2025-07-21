@@ -10,6 +10,7 @@ import Dashboard from './components/Dashboard';
 import JobsPage from './components/JobsPage';
 import MeetingsPage from './components/MeetingsPage';
 import MeetingDetail from './components/MeetingDetail';
+import NotificationSystem from './components/NotificationSystem';
 
 // Create React Query client
 const queryClient = new QueryClient({
@@ -18,6 +19,10 @@ const queryClient = new QueryClient({
             retry: 1,
             refetchOnWindowFocus: false,
             staleTime: 5 * 60 * 1000, // 5 minutes
+            cacheTime: 10 * 60 * 1000, // 10 minutes
+        },
+        mutations: {
+            retry: 1,
         },
     },
 });
@@ -53,6 +58,9 @@ const App: React.FC = () => {
                         }}
                     />
 
+                    {/* Real-time notification system */}
+                    <NotificationSystem />
+
                     {/* Navigation */}
                     <Navbar />
 
@@ -71,6 +79,9 @@ const App: React.FC = () => {
                             {/* Meeting Detail */}
                             <Route path="/meetings/:meetingId" element={<MeetingDetail />} />
 
+                            {/* System Pages (placeholders for now) */}
+                            <Route path="/system" element={<SystemPage />} />
+
                             {/* 404 Not Found */}
                             <Route path="*" element={<NotFound />} />
                         </Routes>
@@ -78,6 +89,38 @@ const App: React.FC = () => {
                 </div>
             </Router>
         </QueryClientProvider>
+    );
+};
+
+// System Page Component (placeholder)
+const SystemPage: React.FC = () => {
+    return (
+        <div className="space-y-6">
+            <div>
+                <h1 className="text-2xl font-bold text-gray-900">System Status</h1>
+                <p className="mt-1 text-sm text-gray-500">
+                    Monitor system health and performance
+                </p>
+            </div>
+
+            <div className="bg-white shadow rounded-lg p-6">
+                <div className="text-center py-12">
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                        System Monitoring
+                    </h3>
+                    <p className="text-gray-500 mb-4">
+                        This page will be implemented in a future commit
+                    </p>
+                    <div className="text-sm text-gray-400">
+                        Features coming soon:
+                        <br />• Real-time service health monitoring
+                        <br />• Performance metrics and analytics
+                        <br />• System logs and debugging tools
+                        <br />• Configuration management
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 };
 
