@@ -15,9 +15,168 @@ services:
       - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
       - FIREBASE_SERVICE_ACCOUNT_PATH=/app/firebase-service-account.json
       - SECRET_KEY=${SECRET_KEY:-dev-secret-key}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     volumes:
       - ./backend:/app
       - ./firebase-service-account.json:/app/firebase-service-account.json:ro
     depends_on:
       - redis
-    restart:
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # Frontend React App
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000/api
+      - REACT_APP_FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - REACT_APP_FIREBASE_API_KEY=${FIREBASE_API_KEY}
+      - REACT_APP_FIREBASE_AUTH_DOMAIN=${FIREBASE_AUTH_DOMAIN}
+      - REACT_APP_FIREBASE_STORAGE_BUCKET=${FIREBASE_STORAGE_BUCKET}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # Redis for job queue and caching
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - app-network
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+
+  # Celery worker for background jobs
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - FLASK_ENV=development
+      - TLDV_API_KEY=${TLDV_API_KEY}
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - FIREBASE_SERVICE_ACCOUNT_PATH=/app/firebase-service-account.json
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - CELERY_WORKER_NAME=worker-main
+      - CELERY_WORKER_CONCURRENCY=4
+      - CELERY_WORKER_QUEUES=default,meetings,jobs
+    volumes:
+      - ./backend:/app
+      - ./firebase-service-account.json:/app/firebase-service-account.json:ro
+    depends_on:
+      - redis
+      - backend
+    restart: unless-stopped
+    networks:
+      - app-network
+    command: python worker.py
+
+  # Celery worker for cleanup tasks
+  celery_cleanup_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - FLASK_ENV=development
+      - TLDV_API_KEY=${TLDV_API_KEY}
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - FIREBASE_SERVICE_ACCOUNT_PATH=/app/firebase-service-account.json
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - CELERY_WORKER_NAME=worker-cleanup
+      - CELERY_WORKER_CONCURRENCY=2
+      - CELERY_WORKER_QUEUES=cleanup
+    volumes:
+      - ./backend:/app
+      - ./firebase-service-account.json:/app/firebase-service-account.json:ro
+    depends_on:
+      - redis
+      - celery_worker
+    restart: unless-stopped
+    networks:
+      - app-network
+    command: python worker.py
+
+  # Celery beat scheduler for periodic tasks
+  celery_beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - FLASK_ENV=development
+      - TLDV_API_KEY=${TLDV_API_KEY}
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - FIREBASE_SERVICE_ACCOUNT_PATH=/app/firebase-service-account.json
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    volumes:
+      - ./backend:/app
+      - ./firebase-service-account.json:/app/firebase-service-account.json:ro
+      - celery_beat_data:/app/beat-data
+    depends_on:
+      - redis
+      - celery_worker
+    restart: unless-stopped
+    networks:
+      - app-network
+    command: python beat.py
+
+  # Celery Flower for monitoring (optional)
+  celery_flower:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5555:5555"
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - redis
+      - celery_worker
+    restart: unless-stopped
+    networks:
+      - app-network
+    command: celery -A celery_config.celery_app flower --port=5555 --broker=redis://redis:6379/0
+
+  # Redis Commander for Redis monitoring (optional)
+  redis_commander:
+    image: rediscommander/redis-commander:latest
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - app-network
+
+volumes:
+  redis_data:
+  celery_beat_data:
+
+networks:
+  app-network:
+    driver: bridge

@@ -1,41 +1,24 @@
-/**
- * Tipi per Job
- */
-
-export type JobStatus = 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
-export type JobType = 'sync_meetings' | 'download_transcript' | 'download_highlights' | 'download_video';
-
-export interface Job {
-    id: string;
-    jobType: JobType;
-    status: JobStatus;
-    meetingId?: string;
-
-    // Progress
-    progressPercentage: number;
-    currentStep?: string;
-    totalSteps: number;
-
-    // Timing
-    createdAt: string;
-    startedAt?: string;
-    completedAt?: string;
-
-    // Results
-    result?: Record<string, any>;
-    errorMessage?: string;
-    errorDetails?: Record<string, any>;
-
-    // Metadata
-    metadata: Record<string, any>;
-
-    // Computed
-    durationSeconds?: number;
-    isFinished: boolean;
+export interface JobProgress {
+  overall_percentage: number;
+  current_step?: string;
+  total_items?: number;
+  processed_items?: number;
+  total_steps?: number;
+  completed_steps?: number;
 }
 
-export interface JobCreate {
-    jobType: JobType;
-    meetingId?: string;
-    metadata?: Record<string, any>;
+export interface JobError {
+  message: string;
+}
+
+export interface Job {
+  id: string;
+  name?: string;
+  status?: 'running' | 'completed' | 'failed' | 'pending';
+  type?: string;
+  priority?: number;
+  startedAt?: string;
+  completedAt?: string;
+  progress?: JobProgress;
+  errors?: JobError[];
 }
