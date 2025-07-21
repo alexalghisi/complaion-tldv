@@ -1,5 +1,7 @@
 # Integrazione tl;dv - Documentazione Tecnica
 
+<img width="1916" height="990" alt="image" src="https://github.com/user-attachments/assets/cf1446a4-edcc-496f-8947-8a56887a639c" />
+
 ## 📋 Panoramica del Progetto
 
 Questo progetto implementa un'integrazione completa con la piattaforma tl;dv per scaricare e visualizzare i dati delle chiamate in un'interfaccia web moderna e intuitiva.
