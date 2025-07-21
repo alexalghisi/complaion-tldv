@@ -1,21 +1,20 @@
 """
-Modelli dati per l'integrazione tl;dv
+Data models for Complaion tl;dv Integration
 """
 
-from .meeting import Meeting, MeetingCreate, MeetingUpdate
+from .meeting import Meeting, MeetingResponse
 from .transcript import Transcript, TranscriptSegment
 from .highlights import Highlights, Highlight
-from .job import Job, JobStatus, JobCreate
+from .job import Job, JobStatus, JobResponse
 
 __all__ = [
-    "Meeting",
-    "MeetingCreate",
-    "MeetingUpdate",
-    "Transcript",
-    "TranscriptSegment",
-    "Highlights",
-    "Highlight",
-    "Job",
-    "JobStatus",
-    "JobCreate"
+    'Meeting',
+    'MeetingResponse',
+    'Transcript',
+    'TranscriptSegment',
+    'Highlights',
+    'Highlight',
+    'Job',
+    'JobStatus',
+    'JobResponse'
 ]
